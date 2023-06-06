@@ -945,7 +945,7 @@ class _MultipleSearchSelectionState<T>
               const Flexible(
                 child: CircleAvatar(
                   backgroundColor: Colors.amber,
-                  child: Icon(Icons.add),
+                  child: Icon(Icons.add, color: Colors.white),
                 ),
               ),
             ],
