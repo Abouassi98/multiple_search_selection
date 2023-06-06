@@ -880,13 +880,8 @@ class _MultipleSearchSelectionState<T>
       children: [
         if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Flexible(
-                child: CircleAvatar(
-                  backgroundColor: Colors.amber,
-                  child: Icon(Icons.add),
-                ),
-              ),
               Flexible(
                 flex: 6,
                 child: DecoratedBox(
@@ -945,6 +940,12 @@ class _MultipleSearchSelectionState<T>
                       setState(() {});
                     },
                   ),
+                ),
+              ),
+              const Flexible(
+                child: CircleAvatar(
+                  backgroundColor: Colors.amber,
+                  child: Icon(Icons.add),
                 ),
               ),
             ],
