@@ -1,5 +1,3 @@
-library multiple_search_selection;
-
 import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/helpers/create_options.dart';
 import 'package:multiple_search_selection/helpers/jaro.dart';
@@ -880,6 +878,118 @@ class _MultipleSearchSelectionState<T>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          Row(
+            children: [
+              const Flexible(
+                child: CircleAvatar(
+                  backgroundColor: Colors.amber,
+                  child: Icon(Icons.add),
+                ),
+              ),
+              Flexible(
+                flex: 6,
+                child: DecoratedBox(
+                  decoration: widget.searchFieldBoxDecoration ??
+                      BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                          left: BorderSide(
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                          right: BorderSide(
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                          bottom: BorderSide(
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                      ),
+                  child: TextField(
+                    key: const Key('searchfield'),
+                    focusNode: widget.textFieldFocus,
+                    enabled: !maxItemsSelected,
+                    controller: widget.searchFieldTextEditingController,
+                    style: widget.searchFieldTextStyle,
+                    decoration: widget.searchFieldInputDecoration ??
+                        InputDecoration(
+                          contentPadding: const EdgeInsets.only(left: 6),
+                          hintText: widget.hintText,
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          suffixIcon: widget.showClearSearchFieldButton
+                              ? IconButton(
+                                  onPressed: _onClearTextField,
+                                  icon: const Icon(Icons.clear),
+                                )
+                              : null,
+                        ),
+                    onChanged: (value) {
+                      showedItems = _searchAllItems(value);
+                      if (widget.itemsVisibility ==
+                          ShowedItemsVisibility.onType) {
+                        expanded = widget.itemsVisibility ==
+                                ShowedItemsVisibility.onType &&
+                            widget.searchFieldTextEditingController.text
+                                .isNotEmpty;
+                      }
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        const SizedBox(
+          height: 10,
+        ),
+        if (expanded && widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: widget.maximumShowItemsHeight,
+            ),
+            decoration: widget.showedItemsBoxDecoration ??
+                BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.withOpacity(0.5),
+                    ),
+                    left: BorderSide(
+                      color: Colors.grey.withOpacity(0.5),
+                    ),
+                    right: BorderSide(
+                      color: Colors.grey.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+            child: RawScrollbar(
+              controller: widget.showedItemsScrollController,
+              thumbColor: widget.showedItemsScrollbarColor,
+              thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
+              minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
+              minOverscrollLength:
+                  widget.showedItemsScrollbarMinOverscrollLength ?? 5,
+              radius:
+                  widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
+              thumbVisibility: widget.showShowedItemsScrollbar,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child:
+                    maxItemsSelected ? const SizedBox() : _buildShowedItems(),
+              ),
+            ),
+          ),
         if (widget.title != null) ...[
           widget.title!,
         ],
@@ -1107,103 +1217,6 @@ class _MultipleSearchSelectionState<T>
             ],
           )
         ],
-        const SizedBox(
-          height: 10,
-        ),
-        if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
-          DecoratedBox(
-            decoration: widget.searchFieldBoxDecoration ??
-                BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    left: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    right: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    bottom: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-            child: TextField(
-              key: const Key('searchfield'),
-              focusNode: widget.textFieldFocus,
-              enabled: !maxItemsSelected,
-              controller: widget.searchFieldTextEditingController,
-              style: widget.searchFieldTextStyle,
-              decoration: widget.searchFieldInputDecoration ??
-                  InputDecoration(
-                    contentPadding: const EdgeInsets.only(left: 6),
-                    hintText: widget.hintText,
-                    hintStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    suffixIcon: widget.showClearSearchFieldButton
-                        ? IconButton(
-                            onPressed: _onClearTextField,
-                            icon: const Icon(Icons.clear),
-                          )
-                        : null,
-                  ),
-              onChanged: (value) {
-                showedItems = _searchAllItems(value);
-                if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                  expanded = widget.itemsVisibility ==
-                          ShowedItemsVisibility.onType &&
-                      widget.searchFieldTextEditingController.text.isNotEmpty;
-                }
-                setState(() {});
-              },
-            ),
-          ),
-        if (expanded && widget.itemsVisibility != ShowedItemsVisibility.toggle)
-          Container(
-            constraints: BoxConstraints(
-              maxHeight: widget.maximumShowItemsHeight,
-            ),
-            decoration: widget.showedItemsBoxDecoration ??
-                BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    left: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    right: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-            child: RawScrollbar(
-              controller: widget.showedItemsScrollController,
-              thumbColor: widget.showedItemsScrollbarColor,
-              thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
-              minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
-              minOverscrollLength:
-                  widget.showedItemsScrollbarMinOverscrollLength ?? 5,
-              radius:
-                  widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
-              thumbVisibility: widget.showShowedItemsScrollbar,
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child:
-                    maxItemsSelected ? const SizedBox() : _buildShowedItems(),
-              ),
-            ),
-          )
       ],
     );
   }
